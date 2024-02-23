@@ -53,13 +53,13 @@ fn specialization() -> TokenStream {
         }
 
         impl PathToDisplayDoc for ::std::path::Path {
-            fn __displaydoc_display(&self) -> std::path::Display<'_> {
+            fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
                 self.display()
             }
         }
 
         impl PathToDisplayDoc for ::std::path::PathBuf {
-            fn __displaydoc_display(&self) -> std::path::Display<'_> {
+            fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
                 self.display()
             }
         }
