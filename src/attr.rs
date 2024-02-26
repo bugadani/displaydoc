@@ -69,6 +69,14 @@ impl AttrsHelper {
             return Ok(Some(display));
         }
 
+        let ignore_extra_doc_attributes = if !self.ignore_extra_doc_attributes {
+            attrs
+                .iter()
+                .any(|attr| attr.path().is_ident("ignore_extra_doc_attributes"))
+        } else {
+            true
+        };
+
         let mut displays = vec![];
         for attr in attrs {
             if attr.path().is_ident("doc") {
@@ -101,7 +109,7 @@ impl AttrsHelper {
 
                 display.expand_shorthand();
 
-                if self.ignore_extra_doc_attributes {
+                if ignore_extra_doc_attributes {
                     return Ok(Some(display));
                 }
 

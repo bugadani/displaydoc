@@ -88,6 +88,13 @@ mod inner_mod {
         ///
         /// multiple paragraphs?
         Variant9,
+
+        /// what about
+        /// multiple lines?
+        ///
+        /// multiple paragraphs? but only first one should be used
+        #[ignore_extra_doc_attributes]
+        Variant10,
     }
 }
 
@@ -151,6 +158,7 @@ fn does_it_print() {
         inner_mod::InnerHappy::Variant9,
         "what about\nmultiple lines?\n\nmultiple paragraphs?",
     );
+    assert_display(inner_mod::InnerHappy::Variant10, "what about");
 }
 
 #[test]
