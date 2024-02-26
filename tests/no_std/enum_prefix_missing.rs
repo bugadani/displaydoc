@@ -18,7 +18,7 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
     }
 }
 
-use displaydoc::Display;
+use docsplay::Display;
 
 #[derive(Display)]
 #[prefix_enum_doc_attributes]

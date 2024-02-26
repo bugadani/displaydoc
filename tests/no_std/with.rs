@@ -24,7 +24,7 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 #[cfg(feature = "std")]
 fn main() {}
 
-use displaydoc::Display;
+use docsplay::Display;
 
 /// this type is pretty swell
 #[derive(Display)]

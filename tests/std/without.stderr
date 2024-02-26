@@ -1,8 +1,8 @@
-warning: unused import: `displaydoc::Display`
+warning: unused import: `docsplay::Display`
   --> tests/std/without.rs:27:5
    |
-27 | use displaydoc::Display;
-   |     ^^^^^^^^^^^^^^^^^^^
+27 | use docsplay::Display;
+   |     ^^^^^^^^^^^^^^^^^
    |
    = note: `#[warn(unused_imports)]` on by default
 

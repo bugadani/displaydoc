@@ -1,8 +1,7 @@
 derive(Display) /// `From<docs>`
 ===============
 
-[![Latest Version](https://img.shields.io/crates/v/displaydoc.svg)](https://crates.io/crates/displaydoc)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/displaydoc)
+[![Latest Version](https://img.shields.io/crates/v/docsplay.svg)](https://crates.io/crates/docsplay)
 
 {{readme}}
 

@@ -1,4 +1,4 @@
-use displaydoc::Display;
+use docsplay::Display;
 
 #[derive(Display)]
 enum EmptyInside {}

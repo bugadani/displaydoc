@@ -75,7 +75,7 @@ impl AttrsHelper {
             .count();
 
         if !self.ignore_extra_doc_attributes && num_doc_attrs > 1 {
-            panic!("Multi-line comments are disabled by default by displaydoc. Please consider using block doc comments (/** */) or adding the #[ignore_extra_doc_attributes] attribute to your type next to the derive.");
+            panic!("Multi-line comments are disabled by default by docsplay. Please consider using block doc comments (/** */) or adding the #[ignore_extra_doc_attributes] attribute to your type next to the derive.");
         }
 
         for attr in attrs {

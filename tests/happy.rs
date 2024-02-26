@@ -1,4 +1,4 @@
-use displaydoc::Display;
+use docsplay::Display;
 
 #[cfg(feature = "std")]
 use std::path::PathBuf;
