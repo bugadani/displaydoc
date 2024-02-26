@@ -82,10 +82,17 @@ mod inner_mod {
          * what about extra new lines?
          */
         Variant8,
+
+        /// what about
+        /// multiple lines?
+        ///
+        /// multiple paragraphs?
+        Variant9,
     }
 }
 
 fn assert_display<T: std::fmt::Display>(input: T, expected: &'static str) {
+    use pretty_assertions::assert_eq;
     let out = format!("{}", input);
     assert_eq!(expected, out);
 }
@@ -139,6 +146,10 @@ fn does_it_print() {
     assert_display(
         inner_mod::InnerHappy::Variant8,
         "what about extra new lines?",
+    );
+    assert_display(
+        inner_mod::InnerHappy::Variant9,
+        "what about\nmultiple lines?\n\nmultiple paragraphs?",
     );
 }
 

@@ -69,15 +69,7 @@ impl AttrsHelper {
             return Ok(Some(display));
         }
 
-        let num_doc_attrs = attrs
-            .iter()
-            .filter(|attr| attr.path().is_ident("doc"))
-            .count();
-
-        if !self.ignore_extra_doc_attributes && num_doc_attrs > 1 {
-            panic!("Multi-line comments are disabled by default by docsplay. Please consider using block doc comments (/** */) or adding the #[ignore_extra_doc_attributes] attribute to your type next to the derive.");
-        }
-
+        let mut displays = vec![];
         for attr in attrs {
             if attr.path().is_ident("doc") {
                 let lit = match &attr.meta {
@@ -108,11 +100,16 @@ impl AttrsHelper {
                 };
 
                 display.expand_shorthand();
-                return Ok(Some(display));
+
+                if self.ignore_extra_doc_attributes {
+                    return Ok(Some(display));
+                }
+
+                displays.push(display);
             }
         }
 
-        Ok(None)
+        Ok(merge_displays(displays))
     }
 
     pub(crate) fn display_with_input(
@@ -134,4 +131,46 @@ impl AttrsHelper {
             .display(variant)?
             .map(|variant| VariantDisplay { r#enum, variant }))
     }
+}
+
+fn merge_displays(displays: Vec<Display>) -> Option<Display> {
+    let mut fmt;
+    let mut span;
+    let first_span;
+    let mut args;
+
+    let mut iter = displays.into_iter();
+
+    if let Some(display) = iter.next() {
+        fmt = display.fmt.value();
+
+        span = Some(display.fmt.span());
+        first_span = Some(display.fmt.span());
+
+        args = display.args;
+    } else {
+        return None;
+    }
+
+    for Display {
+        fmt: display_fmt,
+        args: display_args,
+    } in iter
+    {
+        fmt.push_str("\n");
+        fmt.push_str(&display_fmt.value());
+
+        if let Some(s) = span.take() {
+            span = s.join(display_fmt.span());
+        }
+
+        if !display_args.is_empty() {
+            args.extend(quote! {, #display_args});
+        }
+    }
+
+    Some(Display {
+        fmt: LitStr::new(fmt.trim(), span.or(first_span).unwrap()),
+        args,
+    })
 }

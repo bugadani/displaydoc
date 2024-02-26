@@ -16,7 +16,7 @@ fn no_std() {
     #[cfg(feature = "std")]
     t.compile_fail("tests/std/without.rs");
     #[cfg(feature = "std")]
-    t.compile_fail("tests/std/multi_line.rs");
+    t.pass("tests/std/multi_line.rs");
     #[cfg(feature = "std")]
     t.pass("tests/std/multi_line_allow.rs");
     #[cfg(feature = "std")]
