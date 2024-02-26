@@ -40,12 +40,8 @@ pub(crate) struct AttrsHelper {
 
 impl AttrsHelper {
     pub(crate) fn new(attrs: &[Attribute]) -> Self {
-        let ignore_extra_doc_attributes = attrs
-            .iter()
-            .any(|attr| attr.path().is_ident("ignore_extra_doc_attributes"));
-        let prefix_enum_doc_attributes = attrs
-            .iter()
-            .any(|attr| attr.path().is_ident("prefix_enum_doc_attributes"));
+        let ignore_extra_doc_attributes = Self::has_attr(attrs, "ignore_extra_doc_attributes");
+        let prefix_enum_doc_attributes = Self::has_attr(attrs, "prefix_enum_doc_attributes");
 
         Self {
             ignore_extra_doc_attributes,
@@ -53,10 +49,16 @@ impl AttrsHelper {
         }
     }
 
-    pub(crate) fn display(&self, attrs: &[Attribute]) -> Result<Option<Display>> {
-        let displaydoc_attr = attrs.iter().find(|attr| attr.path().is_ident("displaydoc"));
+    fn get_attr<'a>(attrs: &'a [Attribute], name: &str) -> Option<&'a Attribute> {
+        attrs.iter().find(|attr| attr.path().is_ident(name))
+    }
 
-        if let Some(displaydoc_attr) = displaydoc_attr {
+    fn has_attr(attrs: &[Attribute], name: &str) -> bool {
+        Self::get_attr(attrs, name).is_some()
+    }
+
+    pub(crate) fn display(&self, attrs: &[Attribute]) -> Result<Option<Display>> {
+        if let Some(displaydoc_attr) = Self::get_attr(attrs, "displaydoc") {
             let lit = displaydoc_attr
                 .parse_args()
                 .expect("#[displaydoc(\"foo\")] must contain string arguments");
@@ -69,13 +71,8 @@ impl AttrsHelper {
             return Ok(Some(display));
         }
 
-        let ignore_extra_doc_attributes = if !self.ignore_extra_doc_attributes {
-            attrs
-                .iter()
-                .any(|attr| attr.path().is_ident("ignore_extra_doc_attributes"))
-        } else {
-            true
-        };
+        let ignore_extra_doc_attributes = Self::has_attr(attrs, "ignore_extra_doc_attributes")
+            || self.ignore_extra_doc_attributes;
 
         let mut displays = vec![];
         for attr in attrs {
@@ -165,7 +162,7 @@ fn merge_displays(displays: Vec<Display>) -> Option<Display> {
         args: display_args,
     } in iter
     {
-        fmt.push_str("\n");
+        fmt.push('\n');
         fmt.push_str(&display_fmt.value());
 
         if let Some(s) = span.take() {
