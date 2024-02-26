@@ -3,6 +3,8 @@ use docsplay::Display;
 #[cfg(feature = "std")]
 use std::path::PathBuf;
 
+use std::ops::Range;
+
 #[derive(Display)]
 /// Just a basic struct {thing}
 struct HappyStruct {
@@ -43,6 +45,13 @@ enum Happy {
     #[displaydoc("Variant7 has a parameter {0} and uses #[displaydoc]")]
     /// These docs are also ignored
     Variant7(u32),
+
+    /// {range.start} to {range.end}
+    Variant8 { range: Range<u32> },
+
+    /// These docs are ignored
+    #[displaydoc("Variant9 has a range: {range.start} to {range.end}")]
+    Variant9 { range: Range<u32> },
 }
 
 // Used for testing indented doc comments
@@ -121,6 +130,13 @@ fn does_it_print() {
         Happy::Variant7(2),
         "Variant7 has a parameter 2 and uses #[displaydoc]",
     );
+
+    assert_display(Happy::Variant8 { range: 1..4 }, "1 to 4");
+    assert_display(
+        Happy::Variant9 { range: 1..4 },
+        "Variant9 has a range: 1 to 4",
+    );
+
     assert_display(HappyStruct { thing: "hi" }, "Just a basic struct hi");
 
     assert_display(HappyStruct2 { thing: "hi2" }, "Just a basic struct hi2");
