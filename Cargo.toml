@@ -13,26 +13,22 @@ description = """
 A derive macro for implementing the display Trait via a doc comment and string interpolation. Fork of displaydoc
 """
 
-[lib]
-proc-macro = true
-path = "src/lib.rs"
-
 [features]
 default = ["std"]
-std = []
+std = ["docsplay-macros/std"]
 
 [dependencies]
-syn = "2.0"
-quote = "1.0"
-proc-macro2 = "1.0"
+docsplay-macros = { version = "0.1.0", path = "docsplay-macros" }
 
 [dev-dependencies]
 trybuild = "1.0"
 static_assertions = "1.1"
-libc = { version = "0.2", default-features = false }
 rustversion = "1.0.0"
 pretty_assertions = "1.4.0"
 thiserror = "1.0.24"
+
+[workspace]
+members = [".", "docsplay-macros"]
 
 [package.metadata.docs.rs]
 all-features = true

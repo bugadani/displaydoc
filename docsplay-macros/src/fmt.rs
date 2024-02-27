@@ -40,7 +40,7 @@ impl Display {
                 expr.to_string()
             };
             let expr: Expr = syn::parse_str(&expr)
-                .unwrap_or_else(|e| panic!("failed to parse expression '{expr}': {e:?}"));
+                .unwrap_or_else(|e| panic!("failed to parse expression '{}': {:?}", expr, e));
 
             read = &read[close..];
 
@@ -49,7 +49,7 @@ impl Display {
             } else {
                 quote_spanned!(span=> , #expr)
             };
-            out.push_str(&format);
+            out.push_str(format);
 
             args.extend(arg);
         }
