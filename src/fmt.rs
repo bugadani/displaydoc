@@ -49,7 +49,7 @@ impl Display {
             } else {
                 quote_spanned!(span=> , #expr)
             };
-            out.push_str(&format);
+            out.push_str(format);
 
             args.extend(arg);
         }
