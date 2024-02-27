@@ -1,7 +1,16 @@
 [package]
 name = "docsplay-macros"
 version = "0.1.0"
+authors = ["Dániel Buga <bugadani@gmail.com>"]
 edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/bugadani/docsplay"
+homepage = "https://github.com/bugadani/docsplay"
+documentation = "https://docs.rs/docsplay"
+keywords = ["display", "derive"]
+description = """
+Implementation details of docsplay
+"""
 
 [features]
 std = []
