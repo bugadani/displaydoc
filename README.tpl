@@ -1,12 +1,12 @@
-derive(Display) /// `From<docs>`
-===============
+docsplay: doc comments - Displayed
+==================================
 
 [![Latest Version](https://img.shields.io/crates/v/docsplay.svg)](https://crates.io/crates/docsplay)
 
 {{readme}}
 
 
-#### License
+### License
 
 <sup>
 Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
