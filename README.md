@@ -6,8 +6,6 @@ docsplay: doc comments - Displayed
 This library is a fork of [displaydoc](https://crates.io/crates/displaydoc) that provides a
 convenient derive macro for the standard library's [`core::fmt::Display`] trait.
 
-[`core::fmt::Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
-
 ```toml
 [dependencies]
 docsplay = "0.1"
@@ -15,12 +13,10 @@ docsplay = "0.1"
 
 *Compiler support: requires rustc 1.56+*
 
-<br>
-
 ### Example
 
-*Demonstration alongside the [`Error`][std::error::Error] derive macro from [`thiserror`](https://docs.rs/thiserror/1.0.25/thiserror/index.html),
-to propagate source locations from [`io::Error`][std::io::Error] with the `#[source]` attribute:*
+*Demonstration alongside the [`Error`] derive macro from [`thiserror`](https://docs.rs/thiserror/1.0.25/thiserror/index.html),
+to propagate source locations from [`io::Error`] with the `#[source]` attribute:*
 ```rust
 use std::io;
 use docsplay::Display;
@@ -44,12 +40,10 @@ pub enum DataStoreError {
 let error = DataStoreError::Redaction("CLASSIFIED CONTENT".to_string());
 assert!("the data for key `CLASSIFIED CONTENT` is not available" == &format!("{}", error));
 ```
-*Note that although [`io::Error`][std::io::Error] implements `Display`, we do not add it to the
+*Note that although [`io::Error`] implements `Display`, we do not add it to the
 generated message for `DataStoreError::Disconnect`, since it is already made available via
 `#[source]`. See further context on avoiding duplication in error reports at the rust blog
 [here](https://github.com/yaahc/blog.rust-lang.org/blob/master/posts/inside-rust/2021-05-15-What-the-error-handling-project-group-is-working-towards.md#duplicate-information-issue).*
-
-<br>
 
 ### Details
 
@@ -61,7 +55,9 @@ generated message for `DataStoreError::Disconnect`, since it is already made ava
     - `/// {0}` ⟶ `write!("{}", self.0)`
     - `/// {var:?}` ⟶ `write!("{:?}", self.var)`
     - `/// {0:?}` ⟶ `write!("{:?}", self.0)`
-- This also works with structs and [generic types][crate::Display#generic-type-parameters]:
+    - `/// {0.foo()}` ⟶ `write!("{}", self.0.foo())`
+    - `/// {0.foo():?}` ⟶ `write!("{:?}", self.0.foo())`
+- This also works with structs and [generic types]:
 ```rust
 /// oh no, an error: {0}
 #[derive(Display)]
@@ -78,14 +74,12 @@ assert!("oh no, an error: muahaha i am an error" == &format!("{}", error));
 
     - `#[prefix_enum_doc_attributes]` combines the doc comment message on
       your enum itself with the messages for each variant, in the format
-      “enum: variant”. When added to an enum, the doc comment on the enum
+      `enum: variant`. When added to an enum, the doc comment on the enum
       becomes mandatory. When added to any other type, it has no effect.
 
 - In case you want to have an independent doc comment, the
-  `#[displaydoc("...")` atrribute may be used on the variant or struct to
+  `#[display("...")` attribute may be used on the variant or struct to
   override it.
-
-<br>
 
 ### FAQ
 
@@ -93,10 +87,19 @@ assert!("oh no, an error: muahaha i am an error" == &format!("{}", error));
     * Yes! This crate implements the [`core::fmt::Display`] trait, not the [`std::fmt::Display`] trait, so it should work in `std` and `no_std` environments. Just add `default-features = false`.
 
 2. **Does this crate work with `Path` and `PathBuf` via the `Display` trait?**
-    * Yuuup. This crate uses @dtolnay's [autoref specialization technique](https://github.com/dtolnay/case-studies/blob/master/autoref-specialization/README.md) to add a special trait for types to get the display impl. It then specializes for `Path` and `PathBuf`, and when either of these types are found, it calls `self.display()` to get a `std::path::Display<'_>` type which can be used with the `Display` format specifier!
+    * Yuuup. This crate uses @dtolnay's [autoref specialization technique](https://github.com/dtolnay/case-studies/blob/master/autoref-specialization/README.md)
+to add a special trait for types to get the display impl. It then specializes for `Path` and
+`PathBuf`, and when either of these types are found, it calls `self.display()` to get a
+`std::path::Display<'_>` type which can be used with the `Display` format specifier!
+
+[`core::fmt::Display`]: https://doc.rust-lang.org/core/fmt/trait.Display.html
+[`std::fmt::Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
+[`Error`]: https://doc.rust-lang.org/std/error/trait.Error.html
+[`io::Error`]: https://doc.rust-lang.org/std/io/struct.Error.html
+[generic types]: https://doc.rust-lang.org/core/fmt/trait.Display.html#generic-type-parameters
 
 
-#### License
+### License
 
 <sup>
 Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
