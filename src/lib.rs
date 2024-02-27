@@ -146,3 +146,35 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub use docsplay_macros::Display;
+
+#[cfg(feature = "std")]
+#[doc(hidden)]
+pub trait DisplayToDisplayDoc {
+    fn __displaydoc_display(&self) -> Self;
+}
+
+#[cfg(feature = "std")]
+impl<T: ::core::fmt::Display> DisplayToDisplayDoc for &T {
+    fn __displaydoc_display(&self) -> Self {
+        self
+    }
+}
+
+#[cfg(feature = "std")]
+pub trait PathToDisplayDoc {
+    fn __displaydoc_display(&self) -> ::std::path::Display<'_>;
+}
+
+#[cfg(feature = "std")]
+impl PathToDisplayDoc for &::std::path::Path {
+    fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
+        self.display()
+    }
+}
+
+#[cfg(feature = "std")]
+impl PathToDisplayDoc for &::std::path::PathBuf {
+    fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
+        self.display()
+    }
+}

@@ -12,63 +12,22 @@ use syn::{
 use std::collections::HashMap;
 
 pub(crate) fn derive(input: &DeriveInput) -> Result<TokenStream> {
-    let impls = match &input.data {
+    match &input.data {
         Data::Struct(data) => impl_struct(input, data),
         Data::Enum(data) => impl_enum(input, data),
         Data::Union(_) => Err(Error::new_spanned(input, "Unions are not supported")),
-    }?;
-
-    let helpers = specialization();
-    let dummy_const = format_ident!("_DERIVE_Display_FOR_{}", input.ident);
-    Ok(quote! {
-        #[allow(non_upper_case_globals, unused_attributes, unused_qualifications)]
-        const #dummy_const: () = {
-            #helpers
-            #impls
-        };
-    })
-}
-
-#[cfg(feature = "std")]
-fn specialization() -> TokenStream {
-    quote! {
-        trait DisplayToDisplayDoc {
-            fn __displaydoc_display(&self) -> Self;
-        }
-
-        impl<T: ::core::fmt::Display> DisplayToDisplayDoc for &T {
-            fn __displaydoc_display(&self) -> Self {
-                self
-            }
-        }
-
-        // If the `std` feature gets enabled we want to ensure that any crate
-        // using displaydoc can still reference the std crate, which is already
-        // being compiled in by whoever enabled the `std` feature in
-        // `displaydoc`, even if the crates using displaydoc are no_std.
-        extern crate std;
-
-        trait PathToDisplayDoc {
-            fn __displaydoc_display(&self) -> ::std::path::Display<'_>;
-        }
-
-        impl PathToDisplayDoc for ::std::path::Path {
-            fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
-                self.display()
-            }
-        }
-
-        impl PathToDisplayDoc for ::std::path::PathBuf {
-            fn __displaydoc_display(&self) -> ::std::path::Display<'_> {
-                self.display()
-            }
-        }
     }
 }
 
-#[cfg(not(feature = "std"))]
-fn specialization() -> TokenStream {
-    quote! {}
+fn import() -> TokenStream {
+    if cfg!(feature = "std") {
+        quote! {
+            #[allow(unused_imports)]
+            use ::docsplay::{PathToDisplayDoc, DisplayToDisplayDoc};
+        }
+    } else {
+        quote! {}
+    }
 }
 
 fn impl_struct(input: &DeriveInput, data: &DataStruct) -> Result<TokenStream> {
@@ -90,9 +49,13 @@ fn impl_struct(input: &DeriveInput, data: &DataStruct) -> Result<TokenStream> {
             }
             Fields::Unit => quote!(_),
         };
+
+        let import = import();
+
         quote! {
             impl #impl_generics ::core::fmt::Display for #ty #ty_generics #where_clause {
                 fn fmt(&self, formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    #import
                     // NB: This destructures the fields of `self` into named variables (for unnamed
                     // fields, it uses _0, _1, etc as above). The `#[allow(unused_variables)]`
                     // section means it doesn't have to parse the individual field references out of
@@ -394,9 +357,14 @@ fn impl_enum(input: &DeriveInput, data: &DataEnum) -> Result<TokenStream> {
                 })
             })
             .collect::<Result<Vec<_>>>()?;
+
+        let import = import();
+
         Ok(quote! {
             impl #impl_generics ::core::fmt::Display for #ty #ty_generics #where_clause {
                 fn fmt(&self, formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+                    #import
+
                     #[allow(unused_variables)]
                     match self {
                         #(#arms,)*
