@@ -1,16 +1,16 @@
 [package]
-name = "displaydoc"
-version = "0.2.4"
-authors = ["Jane Lusby <jlusby@yaah.dev>"]
-edition = "2018"
+name = "docsplay"
+version = "0.1.0"
+authors = ["Dániel Buga <bugadani@gmail.com>"]
+edition = "2021"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/yaahc/displaydoc"
-homepage = "https://github.com/yaahc/displaydoc"
-documentation = "https://docs.rs/displaydoc"
+repository = "https://github.com/bugadani/docsplay"
+homepage = "https://github.com/bugadani/docsplay"
+documentation = "https://docs.rs/docsplay"
 keywords = ["display", "derive"]
 description = """
-A derive macro for implementing the display Trait via a doc comment and string interpolation
+A derive macro for implementing the display Trait via a doc comment and string interpolation. Fork of displaydoc
 """
 
 [lib]
@@ -31,7 +31,7 @@ trybuild = "1.0"
 static_assertions = "1.1"
 libc = { version = "0.2", default-features = false }
 rustversion = "1.0.0"
-pretty_assertions = "0.6.1"
+pretty_assertions = "1.4.0"
 thiserror = "1.0.24"
 
 [package.metadata.docs.rs]

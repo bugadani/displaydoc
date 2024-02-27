@@ -1,4 +1,4 @@
-use displaydoc::Display;
+use docsplay::Display;
 
 #[derive(Debug, Display)]
 pub enum DataStoreError {

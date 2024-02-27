@@ -1,7 +1,9 @@
-use displaydoc::Display;
+use docsplay::Display;
 
 #[cfg(feature = "std")]
 use std::path::PathBuf;
+
+use std::ops::Range;
 
 #[derive(Display)]
 /// Just a basic struct {thing}
@@ -40,9 +42,16 @@ enum Happy {
     Variant6(PathBuf),
 
     /// These docs are ignored
-    #[displaydoc("Variant7 has a parameter {0} and uses #[displaydoc]")]
+    #[display("Variant7 has a parameter {0} and uses #[display]")]
     /// These docs are also ignored
     Variant7(u32),
+
+    /// {range.start} to {range.end}
+    Variant8 { range: Range<u32> },
+
+    /// These docs are ignored
+    #[display("Variant9 has a range: {range.start} to {range.end}")]
+    Variant9 { range: Range<u32> },
 }
 
 // Used for testing indented doc comments
@@ -82,10 +91,24 @@ mod inner_mod {
          * what about extra new lines?
          */
         Variant8,
+
+        /// what about
+        /// multiple lines?
+        ///
+        /// multiple paragraphs?
+        Variant9,
+
+        /// what about
+        /// multiple lines?
+        ///
+        /// multiple paragraphs? but only first one should be used
+        #[ignore_extra_doc_attributes]
+        Variant10,
     }
 }
 
 fn assert_display<T: std::fmt::Display>(input: T, expected: &'static str) {
+    use pretty_assertions::assert_eq;
     let out = format!("{}", input);
     assert_eq!(expected, out);
 }
@@ -105,8 +128,15 @@ fn does_it_print() {
     );
     assert_display(
         Happy::Variant7(2),
-        "Variant7 has a parameter 2 and uses #[displaydoc]",
+        "Variant7 has a parameter 2 and uses #[display]",
     );
+
+    assert_display(Happy::Variant8 { range: 1..4 }, "1 to 4");
+    assert_display(
+        Happy::Variant9 { range: 1..4 },
+        "Variant9 has a range: 1 to 4",
+    );
+
     assert_display(HappyStruct { thing: "hi" }, "Just a basic struct hi");
 
     assert_display(HappyStruct2 { thing: "hi2" }, "Just a basic struct hi2");
@@ -140,6 +170,11 @@ fn does_it_print() {
         inner_mod::InnerHappy::Variant8,
         "what about extra new lines?",
     );
+    assert_display(
+        inner_mod::InnerHappy::Variant9,
+        "what about\nmultiple lines?\n\nmultiple paragraphs?",
+    );
+    assert_display(inner_mod::InnerHappy::Variant10, "what about");
 }
 
 #[test]

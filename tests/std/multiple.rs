@@ -1,5 +1,6 @@
-#![feature(lang_items, start)]
-#![no_std]
+#![cfg_attr(not(feature = "std"), allow(internal_features))]
+#![cfg_attr(not(feature = "std"), feature(lang_items, start))]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 #[start]
 #[cfg(not(feature = "std"))]
@@ -23,7 +24,7 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
 #[cfg(feature = "std")]
 fn main() {}
 
-use displaydoc::Display;
+use docsplay::Display;
 
 /// this type is pretty swell
 #[derive(Display)]

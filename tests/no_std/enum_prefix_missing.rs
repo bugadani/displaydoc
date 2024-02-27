@@ -1,3 +1,4 @@
+#![cfg_attr(not(feature = "std"), allow(internal_features))]
 #![cfg_attr(not(feature = "std"), feature(lang_items, start))]
 #![cfg_attr(not(feature = "std"), no_std)]
 
@@ -17,7 +18,7 @@ fn panic(_info: &core::panic::PanicInfo) -> ! {
     }
 }
 
-use displaydoc::Display;
+use docsplay::Display;
 
 #[derive(Display)]
 #[prefix_enum_doc_attributes]

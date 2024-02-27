@@ -1,16 +1,7 @@
 use crate::attr::Display;
 use proc_macro2::TokenStream;
 use quote::quote_spanned;
-use syn::{Ident, LitStr};
-
-macro_rules! peek_next {
-    ($read:ident) => {
-        match $read.chars().next() {
-            Some(next) => next,
-            None => return,
-        }
-    };
-}
+use syn::{Expr, LitStr};
 
 impl Display {
     // Transform `"error {var}"` to `"error {}", var`.
@@ -32,23 +23,33 @@ impl Display {
                 continue;
             }
 
-            let next = peek_next!(read);
-
-            let var = match next {
-                '0'..='9' => take_int(&mut read),
-                'a'..='z' | 'A'..='Z' | '_' => take_ident(&mut read),
-                _ => return,
-            };
-
-            let ident = Ident::new(&var, span);
-
-            let next = peek_next!(read);
-
-            let arg = if cfg!(feature = "std") && next == '}' {
-                quote_spanned!(span=> , #ident.__displaydoc_display())
+            let close = if let Some(close) = read.find('}') {
+                close
             } else {
-                quote_spanned!(span=> , #ident)
+                break;
             };
+
+            let contents = &read[..close];
+            let expr_len = contents.find(':').unwrap_or(close);
+
+            let (expr, format) = contents.split_at(expr_len);
+
+            let expr = if expr.starts_with(|c: char| c.is_numeric()) {
+                format!("_{}", expr)
+            } else {
+                expr.to_string()
+            };
+            let expr: Expr = syn::parse_str(&expr)
+                .unwrap_or_else(|e| panic!("failed to parse expression '{expr}': {e:?}"));
+
+            read = &read[close..];
+
+            let arg = if cfg!(feature = "std") && format.is_empty() {
+                quote_spanned!(span=> , (&(#expr)).__displaydoc_display())
+            } else {
+                quote_spanned!(span=> , #expr)
+            };
+            out.push_str(&format);
 
             args.extend(arg);
         }
@@ -57,35 +58,6 @@ impl Display {
         self.fmt = LitStr::new(&out, self.fmt.span());
         self.args = args;
     }
-}
-
-fn take_int(read: &mut &str) -> String {
-    let mut int = String::new();
-    int.push('_');
-    for (i, ch) in read.char_indices() {
-        match ch {
-            '0'..='9' => int.push(ch),
-            _ => {
-                *read = &read[i..];
-                break;
-            }
-        }
-    }
-    int
-}
-
-fn take_ident(read: &mut &str) -> String {
-    let mut ident = String::new();
-    for (i, ch) in read.char_indices() {
-        match ch {
-            'a'..='z' | 'A'..='Z' | '0'..='9' | '_' => ident.push(ch),
-            _ => {
-                *read = &read[i..];
-                break;
-            }
-        }
-    }
-    ident
 }
 
 #[cfg(test)]
@@ -113,28 +85,32 @@ mod tests {
     #[cfg_attr(not(feature = "std"), ignore)]
     fn test_std_expand() {
         assert(
-            "{v} {v:?} {0} {0:?}",
-            "{} {:?} {} {:?}",
-            ", v . __displaydoc_display () , v , _0 . __displaydoc_display () , _0",
+            "{v} {v:?} {0} {0:?} {0.foo()} {0.foo():?}",
+            "{} {:?} {} {:?} {} {:?}",
+            ", (& (v)) . __displaydoc_display () , v , (& (_0)) . __displaydoc_display () , _0 , (& (_0 . foo ())) . __displaydoc_display () , _0 . foo ()",
         );
-        assert("error {var}", "error {}", ", var . __displaydoc_display ()");
+        assert(
+            "error {var}",
+            "error {}",
+            ", (& (var)) . __displaydoc_display ()",
+        );
 
         assert(
             "error {var1}",
             "error {}",
-            ", var1 . __displaydoc_display ()",
+            ", (& (var1)) . __displaydoc_display ()",
         );
 
         assert(
             "error {var1var}",
             "error {}",
-            ", var1var . __displaydoc_display ()",
+            ", (& (var1var)) . __displaydoc_display ()",
         );
 
         assert(
             "The path {0}",
             "The path {}",
-            ", _0 . __displaydoc_display ()",
+            ", (& (_0)) . __displaydoc_display ()",
         );
         assert("The path {0:?}", "The path {:?}", ", _0");
     }

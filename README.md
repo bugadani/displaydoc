@@ -1,17 +1,16 @@
-derive(Display) /// `From<docs>`
-===============
+docsplay: doc comments - Displayed
+==================================
 
-[![Latest Version](https://img.shields.io/crates/v/displaydoc.svg)](https://crates.io/crates/displaydoc)
-[![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/displaydoc)
+[![Latest Version](https://img.shields.io/crates/v/docsplay.svg)](https://crates.io/crates/docsplay)
 
-This library provides a convenient derive macro for the standard library's
-[`core::fmt::Display`] trait.
+This library is a fork of [displaydoc](https://crates.io/crates/displaydoc) that provides a
+convenient derive macro for the standard library's [`core::fmt::Display`] trait.
 
 [`core::fmt::Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
 
 ```toml
 [dependencies]
-displaydoc = "0.2"
+docsplay = "0.1"
 ```
 
 *Compiler support: requires rustc 1.56+*
@@ -24,7 +23,7 @@ displaydoc = "0.2"
 to propagate source locations from [`io::Error`][std::io::Error] with the `#[source]` attribute:*
 ```rust
 use std::io;
-use displaydoc::Display;
+use docsplay::Display;
 use thiserror::Error;
 
 #[derive(Display, Error, Debug)]
@@ -75,9 +74,7 @@ assert!("oh no, an error: muahaha i am an error" == &format!("{}", error));
 - Two optional attributes can be added to your types next to the derive:
 
     - `#[ignore_extra_doc_attributes]` makes the macro ignore any doc
-      comment attributes (or `///` lines) after the first. Multi-line
-      comments using `///` are otherwise treated as an error, so use this
-      attribute or consider switching to block doc comments (`/** */`).
+      comment attributes (or `///` lines) after the first.
 
     - `#[prefix_enum_doc_attributes]` combines the doc comment message on
       your enum itself with the messages for each variant, in the format

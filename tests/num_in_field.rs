@@ -1,5 +1,5 @@
 /// {foo1} {foo2}
-#[derive(displaydoc::Display)]
+#[derive(docsplay::Display)]
 pub struct Test {
     foo1: String,
     foo2: String,

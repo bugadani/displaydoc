@@ -1,11 +1,11 @@
-//! This library provides a convenient derive macro for the standard library's
-//! [`core::fmt::Display`] trait.
+//! This library is a fork of [displaydoc](https://crates.io/crates/displaydoc) that provides a
+//! convenient derive macro for the standard library's [`core::fmt::Display`] trait.
 //!
 //! [`core::fmt::Display`]: https://doc.rust-lang.org/std/fmt/trait.Display.html
 //!
 //! ```toml
 //! [dependencies]
-//! displaydoc = "0.2"
+//! docsplay = "0.1"
 //! ```
 //!
 //! *Compiler support: requires rustc 1.56+*
@@ -18,7 +18,7 @@
 //! to propagate source locations from [`io::Error`][std::io::Error] with the `#[source]` attribute:*
 //! ```rust
 //! use std::io;
-//! use displaydoc::Display;
+//! use docsplay::Display;
 //! use thiserror::Error;
 //!
 //! #[derive(Display, Error, Debug)]
@@ -58,7 +58,7 @@
 //!     - `/// {0:?}` ⟶ `write!("{:?}", self.0)`
 //! - This also works with structs and [generic types][crate::Display#generic-type-parameters]:
 //! ```rust
-//! # use displaydoc::Display;
+//! # use docsplay::Display;
 //! /// oh no, an error: {0}
 //! #[derive(Display)]
 //! pub struct Error<E>(pub E);
@@ -70,9 +70,7 @@
 //! - Two optional attributes can be added to your types next to the derive:
 //!
 //!     - `#[ignore_extra_doc_attributes]` makes the macro ignore any doc
-//!       comment attributes (or `///` lines) after the first. Multi-line
-//!       comments using `///` are otherwise treated as an error, so use this
-//!       attribute or consider switching to block doc comments (`/** */`).
+//!       comment attributes (or `///` lines) after the first.
 //!
 //!     - `#[prefix_enum_doc_attributes]` combines the doc comment message on
 //!       your enum itself with the messages for each variant, in the format
@@ -80,7 +78,7 @@
 //!       becomes mandatory. When added to any other type, it has no effect.
 //!
 //! - In case you want to have an independent doc comment, the
-//!   `#[displaydoc("...")` atrribute may be used on the variant or struct to
+//!   `#[display("...")` attribute may be used on the variant or struct to
 //!   override it.
 //!
 //! <br>
@@ -91,8 +89,11 @@
 //!     * Yes! This crate implements the [`core::fmt::Display`] trait, not the [`std::fmt::Display`] trait, so it should work in `std` and `no_std` environments. Just add `default-features = false`.
 //!
 //! 2. **Does this crate work with `Path` and `PathBuf` via the `Display` trait?**
-//!     * Yuuup. This crate uses @dtolnay's [autoref specialization technique](https://github.com/dtolnay/case-studies/blob/master/autoref-specialization/README.md) to add a special trait for types to get the display impl. It then specializes for `Path` and `PathBuf`, and when either of these types are found, it calls `self.display()` to get a `std::path::Display<'_>` type which can be used with the `Display` format specifier!
-#![doc(html_root_url = "https://docs.rs/displaydoc/0.2.3")]
+//!     * Yuuup. This crate uses @dtolnay's [autoref specialization technique](https://github.com/dtolnay/case-studies/blob/master/autoref-specialization/README.md)
+//! to add a special trait for types to get the display impl. It then specializes for `Path` and
+//! `PathBuf`, and when either of these types are found, it calls `self.display()` to get a
+//! `std::path::Display<'_>` type which can be used with the `Display` format specifier!
+#![doc(html_root_url = "https://docs.rs/docsplay/0.1.0")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![warn(
     rust_2018_idioms,
@@ -105,7 +106,6 @@
     overflowing_literals,
     path_statements,
     patterns_in_fns_without_body,
-    private_in_public,
     unconditional_recursion,
     unused,
     unused_allocation,
@@ -136,13 +136,13 @@ use syn::{parse_macro_input, DeriveInput};
 /// generated assuming each type parameter implements `Display`, but that should
 /// be possible without adding the constraint to the struct definition itself:
 /// ```rust
-/// use displaydoc::Display;
+/// use docsplay::Display;
 ///
 /// /// oh no, an error: {0}
 /// #[derive(Display)]
 /// pub struct Error<E>(pub E);
 ///
-/// // No need to require `E: Display`, since `displaydoc::Display` adds that implicitly.
+/// // No need to require `E: Display`, since `docsplay::Display` adds that implicitly.
 /// fn generate_error<E>(e: E) -> Error<E> { Error(e) }
 ///
 /// assert!("oh no, an error: muahaha" == &format!("{}", generate_error("muahaha")));
@@ -153,13 +153,13 @@ use syn::{parse_macro_input, DeriveInput};
 /// [`Debug`][core::fmt::Debug] trait so that some field may be printed with
 /// `{:?}`, that constraint must currently still also be specified redundantly
 /// at the struct or enum definition site. If a struct or enum field is being
-/// formatted with `{:?}` via [`displaydoc`][crate], and a generic type
+/// formatted with `{:?}` via [`docsplay`][crate], and a generic type
 /// parameter must implement `Debug` to do that, then that struct or enum
 /// definition will need to propagate the `Debug` constraint to every type
 /// parameter it's instantiated with:
 /// ```rust
 /// use core::fmt::Debug;
-/// use displaydoc::Display;
+/// use docsplay::Display;
 ///
 /// /// oh no, an error: {0:?}
 /// #[derive(Display)]
@@ -177,7 +177,7 @@ use syn::{parse_macro_input, DeriveInput};
 /// ```
 #[proc_macro_derive(
     Display,
-    attributes(ignore_extra_doc_attributes, prefix_enum_doc_attributes, displaydoc)
+    attributes(ignore_extra_doc_attributes, prefix_enum_doc_attributes, display)
 )]
 pub fn derive_error(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
