@@ -58,10 +58,10 @@ impl AttrsHelper {
     }
 
     pub(crate) fn display(&self, attrs: &[Attribute]) -> Result<Option<Display>> {
-        if let Some(displaydoc_attr) = Self::get_attr(attrs, "displaydoc") {
-            let lit = displaydoc_attr
+        if let Some(display_attr) = Self::get_attr(attrs, "display") {
+            let lit = display_attr
                 .parse_args()
-                .expect("#[displaydoc(\"foo\")] must contain string arguments");
+                .expect("#[display(\"foo\")] must contain string arguments");
             let mut display = Display {
                 fmt: lit,
                 args: TokenStream::new(),

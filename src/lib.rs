@@ -70,9 +70,7 @@
 //! - Two optional attributes can be added to your types next to the derive:
 //!
 //!     - `#[ignore_extra_doc_attributes]` makes the macro ignore any doc
-//!       comment attributes (or `///` lines) after the first. Multi-line
-//!       comments using `///` are otherwise treated as an error, so use this
-//!       attribute or consider switching to block doc comments (`/** */`).
+//!       comment attributes (or `///` lines) after the first.
 //!
 //!     - `#[prefix_enum_doc_attributes]` combines the doc comment message on
 //!       your enum itself with the messages for each variant, in the format
@@ -80,7 +78,7 @@
 //!       becomes mandatory. When added to any other type, it has no effect.
 //!
 //! - In case you want to have an independent doc comment, the
-//!   `#[displaydoc("...")` attribute may be used on the variant or struct to
+//!   `#[display("...")` attribute may be used on the variant or struct to
 //!   override it.
 //!
 //! <br>
@@ -179,7 +177,7 @@ use syn::{parse_macro_input, DeriveInput};
 /// ```
 #[proc_macro_derive(
     Display,
-    attributes(ignore_extra_doc_attributes, prefix_enum_doc_attributes, displaydoc)
+    attributes(ignore_extra_doc_attributes, prefix_enum_doc_attributes, display)
 )]
 pub fn derive_error(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);

@@ -16,3 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `{}` placeholders can now contain arbitrary expressions. The first identifier refers to a struct/enum variant field
 - Multi-line doc comments are now collected, except when disabled with `#[ignore_extra_doc_attributes]`
 - `#[ignore_extra_doc_attributes]` can now be placed on top of any field where doc comments are expected
+
+## Changed
+
+- Renamed `#[displaydoc()]` to `#[display()]`

@@ -74,9 +74,7 @@ assert!("oh no, an error: muahaha i am an error" == &format!("{}", error));
 - Two optional attributes can be added to your types next to the derive:
 
     - `#[ignore_extra_doc_attributes]` makes the macro ignore any doc
-      comment attributes (or `///` lines) after the first. Multi-line
-      comments using `///` are otherwise treated as an error, so use this
-      attribute or consider switching to block doc comments (`/** */`).
+      comment attributes (or `///` lines) after the first.
 
     - `#[prefix_enum_doc_attributes]` combines the doc comment message on
       your enum itself with the messages for each variant, in the format

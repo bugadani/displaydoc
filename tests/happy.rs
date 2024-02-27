@@ -42,7 +42,7 @@ enum Happy {
     Variant6(PathBuf),
 
     /// These docs are ignored
-    #[displaydoc("Variant7 has a parameter {0} and uses #[displaydoc]")]
+    #[display("Variant7 has a parameter {0} and uses #[display]")]
     /// These docs are also ignored
     Variant7(u32),
 
@@ -50,7 +50,7 @@ enum Happy {
     Variant8 { range: Range<u32> },
 
     /// These docs are ignored
-    #[displaydoc("Variant9 has a range: {range.start} to {range.end}")]
+    #[display("Variant9 has a range: {range.start} to {range.end}")]
     Variant9 { range: Range<u32> },
 }
 
@@ -128,7 +128,7 @@ fn does_it_print() {
     );
     assert_display(
         Happy::Variant7(2),
-        "Variant7 has a parameter 2 and uses #[displaydoc]",
+        "Variant7 has a parameter 2 and uses #[display]",
     );
 
     assert_display(Happy::Variant8 { range: 1..4 }, "1 to 4");
