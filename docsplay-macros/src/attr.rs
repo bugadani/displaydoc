@@ -170,7 +170,7 @@ fn merge_displays(displays: Vec<Display>) -> Option<Display> {
         }
 
         if !display_args.is_empty() {
-            args.extend(quote! {, #display_args});
+            args.extend(display_args);
         }
     }
 

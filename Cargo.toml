@@ -1,6 +1,6 @@
 [package]
 name = "docsplay"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Dániel Buga <bugadani@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ default = ["std"]
 std = ["docsplay-macros/std"]
 
 [dependencies]
-docsplay-macros = { version = "0.1.0", path = "docsplay-macros" }
+docsplay-macros = { version = "0.1.1", path = "docsplay-macros" }
 
 [dev-dependencies]
 trybuild = "1.0"

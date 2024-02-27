@@ -52,6 +52,11 @@ enum Happy {
     /// These docs are ignored
     #[display("Variant9 has a range: {range.start} to {range.end}")]
     Variant9 { range: Range<u32> },
+
+    /// Variant9 has a range:
+    /// {range.start}
+    /// {range.end}
+    Variant10 { range: Range<u32> },
 }
 
 // Used for testing indented doc comments
@@ -135,6 +140,10 @@ fn does_it_print() {
     assert_display(
         Happy::Variant9 { range: 1..4 },
         "Variant9 has a range: 1 to 4",
+    );
+    assert_display(
+        Happy::Variant10 { range: 1..4 },
+        "Variant9 has a range:\n1\n4",
     );
 
     assert_display(HappyStruct { thing: "hi" }, "Just a basic struct hi");
